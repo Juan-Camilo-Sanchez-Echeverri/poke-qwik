@@ -24,7 +24,7 @@ export default component$(() => {
   return (
     <>
       <span class="text-2xl">Buscador Simple</span>
-      <span class="text-9xl">{pokemonId}</span>
+      <span class="text-9xl">{pokemonId.value}</span>
 
       <div onClick$={() => goToPokemon(pokemonId.value)}>
         <PokemonImage

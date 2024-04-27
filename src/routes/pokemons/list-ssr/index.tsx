@@ -1,13 +1,21 @@
-import { component$, useComputed$ } from '@builder.io/qwik';
+import {
+  component$,
+  useComputed$,
+  useSignal,
+  $,
+  useStore,
+  useVisibleTask$,
+} from '@builder.io/qwik';
 import {
   Link,
   routeLoader$,
   useLocation,
   type DocumentHead,
 } from '@builder.io/qwik-city';
-import { getSmallPokemons } from '~/helpers/get-small-pokemons';
+import { getSmallPokemons, getDetailByPokemonId } from '~/helpers/';
 import { PokemonImage } from '../../../components/pokemons/PokemonImage';
 import type { SmallPokemon } from '~/interfaces';
+import { Modal } from '~/components/shared';
 
 export const usePokemonList = routeLoader$<SmallPokemon[]>(
   async ({ query, redirect, url, pathname }) => {
@@ -29,6 +37,36 @@ export const usePokemonList = routeLoader$<SmallPokemon[]>(
 export default component$(() => {
   const pokemons = usePokemonList();
   const location = useLocation();
+
+  const modalVisible = useSignal(false);
+  const modalPokemon = useStore({
+    id: '',
+    name: '',
+  });
+
+  const chatGptPokemonFact = useSignal('');
+
+  //Modal functions
+  const showModal = $((id: string, name: string) => {
+    modalPokemon.id = id;
+    modalPokemon.name = name;
+    modalVisible.value = true;
+  });
+
+  const closeModal = $(() => {
+    modalVisible.value = false;
+  });
+
+  useVisibleTask$(({ track }) => {
+    track(() => modalPokemon.name);
+
+    if (modalPokemon.name.length > 0) {
+      chatGptPokemonFact.value = '';
+      getDetailByPokemonId(modalPokemon.id).then(
+        (resp) => (chatGptPokemonFact.value = resp)
+      );
+    }
+  });
 
   const currentOffset = useComputed$<number>(() => {
     const offsetString = new URLSearchParams(location.url.search);
@@ -62,6 +100,7 @@ export default component$(() => {
         {pokemons.value.map((pokemon) => (
           <div
             key={pokemon.name}
+            onClick$={() => showModal(pokemon.id, pokemon.name)}
             class="m-5 flex flex-col justify-center items-center"
           >
             <PokemonImage id={pokemon.id} />
@@ -69,6 +108,18 @@ export default component$(() => {
           </div>
         ))}
       </div>
+
+      <Modal showModal={modalVisible.value} closeFn={closeModal} persistent>
+        <div q:slot="title">{modalPokemon.name}</div>
+        <div q:slot="content" class="flex flex-col justify-center items-center">
+          <PokemonImage id={modalPokemon.id} />
+          <span>
+            {chatGptPokemonFact.value == ''
+              ? 'Cargando...'
+              : chatGptPokemonFact}
+          </span>
+        </div>
+      </Modal>
     </>
   );
 });

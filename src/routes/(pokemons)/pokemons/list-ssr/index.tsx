@@ -13,10 +13,9 @@ import {
   type DocumentHead,
 } from '@builder.io/qwik-city';
 import { getSmallPokemons, getDetailByPokemonId } from '~/helpers/';
-
+import { PokemonImage } from '../../../components/pokemons/PokemonImage';
 import type { SmallPokemon } from '~/interfaces';
 import { Modal } from '~/components/shared';
-import { PokemonImage } from '~/components/pokemons/PokemonImage';
 
 export const usePokemonList = routeLoader$<SmallPokemon[]>(
   async ({ query, redirect, url, pathname }) => {

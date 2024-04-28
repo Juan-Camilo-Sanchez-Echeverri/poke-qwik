@@ -26,7 +26,7 @@ export const PokemonProvider = component$(() => {
   const pokemonList = useStore<PokemonListState>({
     pokemons: [],
     isLoading: false,
-    currentPage: 1,
+    currentPage: 0,
   });
 
   useContextProvider(PokemonGameContext, pokemonGame);

@@ -38,7 +38,7 @@
     "eslint": "10.9.1",
     "eslint-plugin-qwik": "^1.2.6",
     "express": "4.22.2",
-    "netlify-cli": "^27.1.2",
+    "netlify-cli": "^27.8.0",
     "postcss": "^8.5.26",
     "prettier": "2.8.8",
     "tailwindcss": "^3.3.1",
